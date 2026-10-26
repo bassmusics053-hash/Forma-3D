@@ -1,0 +1,90 @@
+/* FORMA 3D | Official logo palette: pitch black, neon orange, violet and white. */
+:root {
+  --bg:#0a0810; --panel:#17121f; --ink:#f9f6ff; --muted:#b5aabe;
+  --line:#342840; --yellow:#ff8400; --red:#ff7900; --soft:#24172f;
+  --purple:#9628ff; --orange:#ff7900;
+  --shadow:0 18px 48px rgba(94,25,143,.24);
+  color-scheme:dark;
+}
+body.dark {
+  --bg:#09070e; --panel:#17111e; --ink:#fcfaff; --muted:#bdafc8;
+  --line:#362941; --yellow:#ff8400; --red:#ff7900; --soft:#261832;
+  --purple:#a52aff; --orange:#ff7900; --shadow:0 18px 48px rgba(95,23,149,.28);
+  color-scheme:dark;
+}
+/* Optional bright variant still uses the logo's orange / purple identity. */
+body:not(.dark){
+  --bg:#f8f6fa; --panel:#fff; --ink:#1b1325; --muted:#6f627a;
+  --line:#e5dbea; --yellow:#ff8400; --red:#e26000; --soft:#f6ebfc;
+  --purple:#8420da; --orange:#ff7900; --shadow:0 16px 40px rgba(77,33,95,.12);
+  color-scheme:light;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink)}
+body.dark .topline,.topline{background:#120d19;color: #cbbdd1}
+body:not(.dark) .topline{background:#f0e9f5;color:#594c62}
+.topline b,.topline a{color:var(--red)}
+header{background:color-mix(in srgb,var(--bg) 93%,transparent);border-bottom:1px solid var(--line);box-shadow:0 9px 36px #0003}
+.logo{width:190px;height:67px;object-fit:contain;object-position:left center;background:#0a0810;border-radius:12px;padding:0}
+.catalog,.primary{background:linear-gradient(110deg,#ff8c00,#ff6100);color:#130a0d;box-shadow:0 6px 18px #ff6e002d;cursor:pointer}
+.catalog:hover,.primary:hover{filter:brightness(1.09)}
+.search{border-color:#9740cb;background:var(--panel);box-shadow:0 0 0 2px #9c31ff0b}
+.search:focus-within{border-color:#ff8500;box-shadow:0 0 0 3px #ff840025}
+.search button{background:linear-gradient(145deg,#ff8d00,#ff6200);color:#160913;cursor:pointer;font-size:26px}
+.action{color:var(--ink);cursor:pointer}
+.action:hover{color:var(--red)}
+.nav span:first-child,.sectionHead span{color:var(--red)}
+.hero{position:relative;margin-top:25px;min-height:400px;padding:56px 55px;overflow:hidden;border-radius:28px;
+  background:radial-gradient(ellipse at 82% 30%,#6c1b9c95,transparent 44%),radial-gradient(ellipse at 15% 106%,#ff62004a,transparent 50%),linear-gradient(125deg,#110b16 0%,#1d1025 57%,#110916 100%);
+  border:1px solid #6e2b8c90;box-shadow:0 22px 52px #0005,0 0 42px #8922e51b;color:white}
+.hero::before{content:"";position:absolute;inset:0;opacity:.4;pointer-events:none;
+  background:linear-gradient(125deg,transparent 42%,#ff840012 43%,transparent 44%),radial-gradient(circle at 80% 47%,transparent 28%,#ff660010 29%,transparent 31%)}
+.hero:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 0 0 1px #8e2ef91b}
+.hero > div{position:relative;z-index:2;max-width:610px}
+.hero h1{font-size:clamp(36px,4.2vw,56px);max-width:625px;letter-spacing:-1.8px;line-height:1.07;font-weight:900;text-shadow:0 2px 19px #0007}
+.hero p{color:#dfd0e7;max-width:490px;font-size:17px}
+.hero small{display:inline-block;padding:8px 13px;border:1px solid #ff8b005c;border-radius:30px;background:#ff820014;color:#ffb561;font-weight:800}
+.hero a{display:inline-block;padding:14px 22px;border-radius:12px;background:linear-gradient(105deg,#ff8a00,#ff6900);color:#160b14;font-weight:900;box-shadow:0 9px 27px #ff65004d;text-decoration:none}
+.hero a:hover{filter:brightness(1.13)}
+.heroBrandArt{position:absolute;z-index:1;width:360px;height:360px;right:17px;top:18px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 0 33px #9232ff60);opacity:.92;pointer-events:none}
+.benefit,.cat,.card,.categoryBig,.settingsCard{background:var(--panel);border:1px solid var(--line);box-shadow:0 3px 20px #00000012}
+.benefit{border-radius:16px}
+.benefit b{color:var(--ink)}
+.benefit span,.categoryBig p{color:var(--muted)}
+.cat i{background:linear-gradient(145deg,#432046,#27152f);border:1px solid #6c2b78;color:#ff8c1c}
+body:not(.dark) .cat i{background:#f8ecff}
+.cat:hover,.categoryBig:hover,.card:hover{border-color:var(--purple);box-shadow:0 12px 34px #7a1fc633;transform:translateY(-3px)}
+.card{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.pic,.categoryImage{background:radial-gradient(circle at 45% 40%,#3c2551 0%,#23172c 52%,#160f1d 100%)}
+body:not(.dark) .pic,body:not(.dark) .categoryImage{background:radial-gradient(circle at 50% 35%,#fff 0%,#f1e9f6 100%)}
+.pic img{object-fit:contain}
+.price,.categoryBig b{color:#ff9029}
+body:not(.dark) .price,body:not(.dark) .categoryBig b{color:#d76100}
+.buy .detail{background:var(--soft);border:1px solid var(--line);color:var(--ink)}
+.buy .detail:hover{border-color:var(--purple)}
+.buy .cart,.backButton{background:linear-gradient(100deg,#ff8e00,#ff6e00);color:#130c16}
+.buy button,.backButton,.theme{cursor:pointer}
+.theme{border-color:#863bb4;box-shadow:0 5px 20px #0004}
+footer{background:linear-gradient(115deg,#100b17,#21102a 72%,#130c17);border-top:3px solid #9233f4;color:#fff}
+.foot img{object-fit:contain;background:#0a0810}
+.foot span{color:#b9acbe}
+.foot a{color:#ffac56}
+.demoNotice{margin-top:20px;background:#241629;border:1px solid #77428e;color:#e7cee7;border-radius:13px;padding:12px 15px;font-size:13px}
+body:not(.dark) .demoNotice{background:#f5e9fa;color:#583367}
+.productSpecs{margin:8px 0 0;font-size:12px;color:var(--muted)}
+/* Admin interface follows the same branding while keeping status colors semantically distinct. */
+.loginPage{background:radial-gradient(circle at 15% 15%,#fa6b0028,transparent 36%),radial-gradient(circle at 80% 84%,#922aff3f,transparent 44%),var(--bg)}
+.loginLogo{object-fit:contain;background:#0a0810}
+.admin{background:var(--bg)} .side{background:#110b17;border-right:1px solid #36243f}
+.side img{object-fit:contain;background:#0a0810}
+.side .active{background:linear-gradient(105deg,#e86d00,#802ad4);color:white}
+.adminTop{border-top-color:#ff8200}
+.admin .primary{background:linear-gradient(105deg,#ff9200,#ff6f00);color:#160b17}
+.newOrderStat{background:#ff830014;border-color:#ff85007c}
+@media(max-width:1000px){.heroBrandArt{width:290px;height:290px;right:-20px;top:42px;opacity:.45}}
+@media(max-width:720px){.hero{min-height:340px;padding:38px 28px}.heroBrandArt{width:260px;height:260px;right:-70px;top:92px;opacity:.25}.hero>div{max-width:95%}.hero h1{font-size:38px}.hero p{max-width:340px}.logo{width:160px;height:60px}}
+@media(max-width:560px){.hero{min-height:335px;padding:32px 22px}.hero h1{font-size:35px}.heroBrandArt{width:250px;height:250px;right:-92px;top:100px}.logo{width:125px;height:55px}.head{gap:6px}.foot img{width:160px}.demoNotice{font-size:12px}}
+
+/* FORMA 3D limited-time offers */
+.dailyOffers{margin:28px 0;padding:24px;border:1px solid #a345ff80;border-radius:24px;background:linear-gradient(125deg,#170d20,#251020 65%,#2e1511);color:#fff}.dailyOffersTitle{display:flex;align-items:end;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:17px}.dailyOffersTitle span{color:#ff7900;font-weight:900}.dailyOffersTitle h2{margin:4px 0;font-size:clamp(23px,3vw,34px)}.dailyOffersTitle p{color:#d7cbdc}.dailyOffersGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:15px}.dailyOfferCard{color:#fff;text-decoration:none;overflow:hidden;border:1px solid #8c3a9f88;background:#100b18;border-radius:17px;transition:transform .2s}.dailyOfferCard:hover{transform:translateY(-3px)}.dailyOfferCard img,.dailyOfferPlaceholder{width:100%;height:170px;object-fit:cover}.dailyOfferPlaceholder{display:grid;place-items:center;background:linear-gradient(45deg,#ff7900,#9628ff);font-weight:900}.dailyOfferInfo{padding:13px;display:grid;gap:7px}.dailyOfferInfo strong{font-size:16px}.dailyOfferInfo span{font-weight:900;color:#ff9838}.dailyOfferInfo small{color:#cebdd2}

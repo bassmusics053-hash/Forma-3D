@@ -1,0 +1,20 @@
+/** Namuna ma'lumotlar. Real buyurtmalar uchun Supabase sozlanishi shart. */
+export const demoMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || !(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+export const demoCategories = [
+  { id: "demo-cat-1", name: "Shaxmat to‘plamlari", slug: "chess", description: "Turli uslubdagi 3D shaxmat figuralari", image_url: "/demo/chess.svg", parent_id: null, show_on_home: true, sort_order: 1, active: true },
+  { id: "demo-cat-2", name: "Stendlar", slug: "stands", description: "Telefon va noutbuk uchun qulay stendlar", image_url: "/demo/phone-stand.svg", parent_id: null, show_on_home: true, sort_order: 2, active: true },
+  { id: "demo-cat-3", name: "Dekor va interyer", slug: "decor", description: "Uy va ofis uchun o‘ziga xos bezaklar", image_url: "/demo/vase.svg", parent_id: null, show_on_home: true, sort_order: 3, active: true },
+  { id: "demo-cat-4", name: "Sovg‘alar va figuralar", slug: "gifts", description: "Original kolleksiya va esdalik buyumlar", image_url: "/demo/figure.svg", parent_id: null, show_on_home: true, sort_order: 4, active: true },
+  { id: "demo-cat-5", name: "Stol aksessuarlari", slug: "desk", description: "Organayzer va kabel ushlagichlar", image_url: "/demo/organizer.svg", parent_id: null, show_on_home: true, sort_order: 5, active: true },
+  { id: "demo-cat-6", name: "Maxsus buyurtmalar", slug: "custom", description: "O‘lcham va dizayn bo‘yicha individual mahsulotlar", image_url: "/demo/lamp.svg", parent_id: null, show_on_home: true, sort_order: 6, active: true },
+];
+export const demoProducts = [
+  { id: "demo-prod-1", sku: "F3D-DEMO-001", name: "Samuray uslubidagi shaxmat to‘plami", slug: "chess", price: 235000, old_price: null, stock: 10, active: true, description: "PLA • to‘plam • namunaviy narx", image_url: "/demo/chess.svg", images: [], category: demoCategories.find(c => c.slug === "chess")! },
+  { id: "demo-prod-2", sku: "F3D-DEMO-002", name: "Minimalist telefon stendi", slug: "phone-stand", price: 39000, old_price: null, stock: 10, active: true, description: "PETG • universal • namunaviy narx", image_url: "/demo/phone-stand.svg", images: [], category: demoCategories.find(c => c.slug === "stands")! },
+  { id: "demo-prod-3", sku: "F3D-DEMO-003", name: "Zamonaviy dekorativ vaza", slug: "vase", price: 89000, old_price: null, stock: 10, active: true, description: "PLA • 18 sm • namunaviy narx", image_url: "/demo/vase.svg", images: [], category: demoCategories.find(c => c.slug === "decor")! },
+  { id: "demo-prod-4", sku: "F3D-DEMO-004", name: "Geometrik stol chirog‘i korpusi", slug: "lamp", price: 120000, old_price: null, stock: 10, active: true, description: "PLA • korpus • namunaviy narx", image_url: "/demo/lamp.svg", images: [], category: demoCategories.find(c => c.slug === "custom")! },
+  { id: "demo-prod-5", sku: "F3D-DEMO-005", name: "Kabel tartiblagich", slug: "cable", price: 25000, old_price: null, stock: 10, active: true, description: "TPU/PETG • namunaviy narx", image_url: "/demo/cable.svg", images: [], category: demoCategories.find(c => c.slug === "desk")! },
+  { id: "demo-prod-6", sku: "F3D-DEMO-006", name: "Stol uchun mini figura", slug: "figure", price: 65000, old_price: null, stock: 10, active: true, description: "PLA • 12 sm • namunaviy narx", image_url: "/demo/figure.svg", images: [], category: demoCategories.find(c => c.slug === "gifts")! },
+  { id: "demo-prod-7", sku: "F3D-DEMO-007", name: "Noutbuk uchun ergonomik stend", slug: "laptop-stand", price: 149000, old_price: null, stock: 10, active: true, description: "PETG • namunaviy narx", image_url: "/demo/laptop-stand.svg", images: [], category: demoCategories.find(c => c.slug === "stands")! },
+  { id: "demo-prod-8", sku: "F3D-DEMO-008", name: "Geometrik stol organayzeri", slug: "organizer", price: 74000, old_price: null, stock: 10, active: true, description: "PLA • namunaviy narx", image_url: "/demo/organizer.svg", images: [], category: demoCategories.find(c => c.slug === "desk")! },
+];
