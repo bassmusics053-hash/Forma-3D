@@ -24,6 +24,7 @@ type ProductSize = {
   price: number;
 };
 
+
 type ProductColor = {
   id: string;
   name: string;
@@ -32,12 +33,14 @@ type ProductColor = {
   available: boolean;
 };
 
+
 export default async function ProductPage({
   params,
 }: ProductPageProps) {
   const { slug } = await params;
 
   // 1. Mahsulotni olish
+  // Brend jadvali endi ishlatilmaydi
 
   const result = demoMode
     ? null
@@ -78,7 +81,9 @@ export default async function ProductPage({
 
         publicSupabase()
           .from("product_colors")
-          .select("id, name, hex_code, swatch_colors, available")
+          
+.select("id, name, hex_code, swatch_colors, available")
+
           .eq("product_id", product.id)
           .order("sort_order", {
             ascending: true,
@@ -111,15 +116,21 @@ export default async function ProductPage({
 
   // 4. Ranglar
 
-  const colors: ProductColor[] = (
-    colorsResult?.data || []
-  ).map((item) => ({
-    id: String(item.id),
-    name: String(item.name),
-    hex_code: String(item.hex_code),
-    swatch_colors: Array.isArray(item.swatch_colors) && item.swatch_colors.length ? item.swatch_colors : [String(item.hex_code)],
-    available: Boolean(item.available),
-  }));
+ 
+const colors: ProductColor[] = (
+  colorsResult?.data || []
+).map((item) => ({
+  id: String(item.id),
+  name: String(item.name),
+  hex_code: String(item.hex_code),
+  swatch_colors:
+    Array.isArray(item.swatch_colors) &&
+    item.swatch_colors.length > 0
+      ? item.swatch_colors
+      : [String(item.hex_code)],
+  available: Boolean(item.available),
+}));
+
 
   // 5. Demo mahsulot variantlari
 
@@ -149,43 +160,45 @@ export default async function ProductPage({
       }
     );
 
-    colors.push(
-      {
-        id: "demo-black",
-        name: "Qora",
-        hex_code: "#252525",
-        swatch_colors: ["#252525"],
-        available: true,
-      },
-      {
-        id: "demo-white",
-        name: "Oq",
-        hex_code: "#eeeeee",
-        swatch_colors: ["#eeeeee"],
-        available: true,
-      },
-      {
-        id: "demo-orange",
-        name: "Orange",
-        hex_code: "#ed7618",
-        swatch_colors: ["#ed7618"],
-        available: false,
-      },
-      {
-        id: "demo-purple",
-        name: "Binafsha",
-        hex_code: "#7650a3",
-        swatch_colors: ["#7650a3"],
-        available: true,
-      },
-      {
-        id: "demo-gray",
-        name: "Kulrang",
-        hex_code: "#888888",
-        swatch_colors: ["#888888"],
-        available: false,
-      }
-    );
+
+colors.push(
+  {
+    id: "demo-black",
+    name: "Qora",
+    hex_code: "#252525",
+    swatch_colors: ["#252525"],
+    available: true,
+  },
+  {
+    id: "demo-white",
+    name: "Oq",
+    hex_code: "#eeeeee",
+    swatch_colors: ["#eeeeee"],
+    available: true,
+  },
+  {
+    id: "demo-orange",
+    name: "Orange",
+    hex_code: "#ed7618",
+    swatch_colors: ["#ed7618"],
+    available: false,
+  },
+  {
+    id: "demo-purple",
+    name: "Binafsha",
+    hex_code: "#7650a3",
+    swatch_colors: ["#7650a3"],
+    available: true,
+  },
+  {
+    id: "demo-gray",
+    name: "Kulrang",
+    hex_code: "#888888",
+    swatch_colors: ["#888888"],
+    available: false,
+  }
+);
+
   }
 
   // 6. Mahsulot rasmlari
@@ -200,6 +213,7 @@ export default async function ProductPage({
       array.indexOf(image) === index
   ) as string[];
 
+  const isAvailable = Number(product.stock) > 0;
 
   return (
     <>
@@ -295,17 +309,68 @@ export default async function ProductPage({
 
           {/* Narx, o'lcham va ranglar */}
 
-          <ProductVariants
-            product={{
-              id: String(product.id),
-              name: String(product.name),
-              slug: String(product.slug),
-              image_url: product.image_url ?? null,
 
-            }}
-            sizes={sizes}
-            colors={colors}
-          />
+<ProductVariants
+  product={{
+    id: String(product.id),
+    name: String(product.name),
+    slug: String(product.slug),
+    image_url: product.image_url ?? null,
+  }}
+  sizes={sizes}
+  colors={colors}
+/>
+
+
+          {/* Ombor holati */}
+
+          <div
+            className={
+              isAvailable
+                ? "productStock available"
+                : "productStock unavailable"
+            }
+          >
+            {isAvailable
+              ? `Omborda mavjud: ${product.stock} dona`
+              : "Hozircha omborda yo'q"}
+          </div>
+
+          {/* Marketplace havolalari */}
+
+          <div className="productOrderButtons">
+
+            {product.uzum_url && (
+              <a
+                href={product.uzum_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Uzum Market
+              </a>
+            )}
+
+            {product.yandex_url && (
+              <a
+                href={product.yandex_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Yandex Market
+              </a>
+            )}
+
+            {product.ozon_url && (
+              <a
+                href={product.ozon_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ozon
+              </a>
+            )}
+
+          </div>
 
         </aside>
       </main>
