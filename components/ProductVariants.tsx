@@ -1,7 +1,7 @@
+
 "use client";
 
-import { useMemo, useState } from "react";
-import { trackProductEvent } from "@/lib/product-analytics";
+import { useEffect, useState } from "react";
 
 type Size = {
   id: string;
@@ -35,90 +35,95 @@ export default function ProductVariants({
   sizes,
   colors,
 }: Props) {
-  const firstAvailableColor =
-    colors.find((item) => item.available)?.id ?? "";
-
-  const [selectedSizeId, setSelectedSizeId] = useState(
+  const [sizeId, setSizeId] = useState(
     sizes[0]?.id ?? ""
   );
-  const [selectedColorId, setSelectedColorId] = useState(
-    firstAvailableColor
-  );
-  const [message, setMessage] = useState("");
 
-  const selectedSize = useMemo(
-    () => sizes.find((item) => item.id === selectedSizeId),
-    [sizes, selectedSizeId]
+  const [colorId, setColorId] = useState(
+    colors.find((c) => c.available)?.id ?? ""
   );
 
-  const selectedColor = useMemo(
-    () => colors.find((item) => item.id === selectedColorId),
-    [colors, selectedColorId]
+  const [telegramUrl, setTelegramUrl] = useState("");
+
+  const selectedSize = sizes.find(
+    (s) => s.id === sizeId
+  );
+
+  const selectedColor = colors.find(
+    (c) => c.id === colorId
   );
 
   const canOrder =
     Boolean(selectedSize) &&
-    Boolean(selectedColor) &&
     Boolean(selectedColor?.available);
 
-  function formatPrice(price: number) {
-    return new Intl.NumberFormat("ru-RU").format(price) + " so‘m";
-  }
+  // Telegram manzilini Supabase sozlamalaridan olish
+  useEffect(() => {
+    let cancelled = false;
 
-  function handleAddToCart() {
-    if (!selectedSize || !selectedColor || !selectedColor.available) {
-      setMessage("Iltimos, o‘lcham va mavjud rangni tanlang.");
-      return;
-    }
+    async function loadSettings() {
+      try {
+        const response = await fetch("/api/settings");
 
-    const cartKey = "forma3d-cart";
+        if (!response.ok) return;
 
-    try {
-      const saved = localStorage.getItem(cartKey);
-      const parsed = saved ? JSON.parse(saved) : [];
-      const cart = Array.isArray(parsed) ? parsed : [];
+        const data = await response.json();
+        const raw = data?.telegram_url;
 
-      const existingIndex = cart.findIndex(
-        (item) =>
-          item.id === product.id &&
-          item.size_id === selectedSize.id &&
-          item.color_id === selectedColor.id
-      );
+        if (typeof raw !== "string") return;
 
-      if (existingIndex >= 0) {
-        cart[existingIndex].quantity += 1;
-      } else {
-        cart.push({
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
-          image_url: product.image_url,
-          quantity: 1,
-          size_id: selectedSize.id,
-          size_label: selectedSize.label,
-          color_id: selectedColor.id,
-          color_name: selectedColor.name,
-          price: selectedSize.price,
-        });
+        let link = raw.trim();
+
+        if (link.startsWith("@")) {
+          link = "https://t.me/" + link.slice(1);
+        }
+
+        if (link.startsWith("t.me/")) {
+          link = "https://" + link;
+        }
+
+        const url = new URL(link);
+
+        const valid =
+          url.protocol === "https:" &&
+          url.hostname === "t.me" &&
+          /^\/[a-zA-Z0-9_]{5,32}\/?$/.test(
+            url.pathname
+          );
+
+        if (valid && !cancelled) {
+          setTelegramUrl(url.toString());
+        }
+      } catch (error) {
+        console.error("Telegram sozlamasi:", error);
       }
-
-      localStorage.setItem(cartKey, JSON.stringify(cart));
-      trackProductEvent(product.id, "add_to_cart");
-      window.dispatchEvent(new Event("forma3d-cart-updated"));
-      setMessage("Mahsulot savatchaga qo‘shildi.");
-    } catch {
-      setMessage("Savatchaga qo‘shishda xatolik yuz berdi.");
     }
+
+    void loadSettings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function formatPrice(price: number) {
+    return (
+      new Intl.NumberFormat("ru-RU").format(price) +
+      " so‘m"
+    );
   }
 
   return (
     <section className="formaVariants">
+
+      {/* ASOSIY NARX */}
       <div className="formaMainPrice">
         {selectedSize
           ? formatPrice(selectedSize.price)
           : "Narx mavjud emas"}
       </div>
 
+      {/* O'LCHAMLAR */}
       <div className="formaOptionGroup">
         <div className="formaOptionHeader">
           <h3>O‘lcham</h3>
@@ -134,12 +139,9 @@ export default function ProductVariants({
               type="button"
               className={
                 "formaSizeButton " +
-                (selectedSizeId === size.id ? "selected" : "")
+                (sizeId === size.id ? "selected" : "")
               }
-              onClick={() => {
-                setSelectedSizeId(size.id);
-                setMessage("");
-              }}
+              onClick={() => setSizeId(size.id)}
             >
               {size.label}
             </button>
@@ -147,9 +149,10 @@ export default function ProductVariants({
         </div>
       </div>
 
+      {/* RANG KOMBINATSIYALARI */}
       <div className="formaOptionGroup">
         <div className="formaOptionHeader">
-          <h3>Rang</h3>
+          <h3>Rang kombinatsiyasi</h3>
           <span>
             {selectedColor?.name ?? "Tanlanmagan"}
           </span>
@@ -157,39 +160,46 @@ export default function ProductVariants({
 
         <div className="formaColorGrid">
           {colors.map((color) => {
-            const isSelected = selectedColorId === color.id;
-            const isUnavailable = !color.available;
+            const selected = colorId === color.id;
+            const unavailable = !color.available;
+
+            const swatches =
+              color.swatch_colors?.length
+                ? color.swatch_colors
+                : [color.hex_code];
+
+            const background =
+              swatches.length > 1
+                ? `linear-gradient(110deg, ${swatches.join(", ")})`
+                : swatches[0];
 
             return (
               <button
                 key={color.id}
                 type="button"
-                disabled={isUnavailable}
+                disabled={unavailable}
                 title={
-                  isUnavailable
-                    ? `${color.name} — sotuvda yo‘q`
+                  unavailable
+                    ? `${color.name} — Tugagan`
                     : color.name
                 }
                 className={
                   "formaColorButton " +
-                  (isSelected ? "selected " : "") +
-                  (isUnavailable ? "unavailable" : "")
+                  (selected ? "selected " : "") +
+                  (unavailable ? "unavailable" : "")
                 }
-                onClick={() => {
-                  setSelectedColorId(color.id);
-                  setMessage("");
-                }}
+                onClick={() => setColorId(color.id)}
               >
                 <span
                   className="formaColorSwatch"
-                  style={{ background: (color.swatch_colors?.length || 0) > 1
-                    ? `linear-gradient(105deg, ${(color.swatch_colors || [color.hex_code]).map((hex, i, all) => `${hex} ${Math.round(i / all.length * 100)}%, ${hex} ${Math.round((i + 1) / all.length * 100)}%`).join(", ")})`
-                    : color.hex_code }}
+                  style={{ background }}
                 />
+
                 <span className="formaColorName">
                   {color.name}
                 </span>
-                {isUnavailable && (
+
+                {unavailable && (
                   <span className="formaSoldOut">
                     Tugagan
                   </span>
@@ -200,28 +210,38 @@ export default function ProductVariants({
         </div>
       </div>
 
+      {/* TANLANGAN VARIANT */}
       <div className="formaSelectedVariant">
         <span>Tanlangan variant</span>
+
         <strong>
           {selectedSize?.label ?? "—"} ·{" "}
           {selectedColor?.name ?? "—"}
         </strong>
       </div>
 
-      <button
-        type="button"
-        className="formaAddToCart"
-        disabled={!canOrder}
-        onClick={handleAddToCart}
-      >
-        {canOrder
-          ? "Savatchaga qo‘shish"
-          : "Hozircha sotuvda yo‘q"}
-      </button>
-
-      {message && (
-        <p className="formaVariantMessage">{message}</p>
+      {/* TELEGRAMGA O'TISH */}
+      {canOrder && telegramUrl ? (
+        <a
+          href={telegramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="formaAddToCart formaOrderButton"
+        >
+          Buyurtma berish ↗
+        </a>
+      ) : (
+        <button
+          type="button"
+          className="formaAddToCart"
+          disabled
+        >
+          {!canOrder
+            ? "Mavjud variantni tanlang"
+            : "Telegram manzili sozlanmagan"}
+        </button>
       )}
+
     </section>
   );
 }
