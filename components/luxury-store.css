@@ -2,3 +2,68 @@
 @media(max-width:1050px){.lux-navlinks{gap:13px}.lux-navlinks a{font-size:11px}.lux-container{padding-left:23px;padding-right:23px}.lux-offer{grid-template-columns:43% 57%}.lux-offer-points{display:none}.lux-products{grid-template-columns:repeat(3,1fr)}.lux-hero-grid{min-height:470px}}@media(max-width:730px){.lux-container{padding-left:17px;padding-right:17px}.lux-nav{height:69px}.lux-logo{width:130px}.lux-logo img{width:132px;height:54px}.lux-menu{display:block}.lux-navlinks{display:none;position:absolute;top:69px;left:0;right:0;background:#151319;border-bottom:1px solid #454049;padding:20px;flex-direction:column;align-items:start;gap:18px}.lux-navlinks.open{display:flex}.lux-cart-trigger span{display:none}.lux-hero-grid{display:flex;flex-direction:column;min-height:0}.lux-hero-copy{padding:40px 0 20px}.lux-hero h1{font-size:clamp(34px,8vw,48px)}.lux-hero-visual{height:260px;width:100%;mask-image:linear-gradient(to bottom,transparent 0%,#000 12%,#000)}.lux-benefits{gap:12px}.lux-section{padding-top:43px}.lux-heading h2{font-size:26px}.lux-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.lux-category{min-height:165px}.lux-category img{height:100px}.lux-category-info{padding:10px}.lux-category-info strong{font-size:12px}.lux-round-arrow{bottom:13px;right:9px}.lux-offer{display:flex;flex-direction:column}.lux-offer-copy{padding:23px}.lux-offer-img{height:200px;min-height:0}.lux-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lux-product-image{height:152px}.lux-product-details{padding:10px}.lux-product-details a{font-size:12px}.lux-product-price strong{font-size:13px}.lux-material-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lux-trust{grid-template-columns:repeat(2,minmax(0,1fr))}.lux-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.lux-footer-grid p{max-width:180px}.lux-filters{flex-direction:column}.lux-filters input{max-width:none}.lux-heading{align-items:start}.lux-heading .lux-text-link{font-size:11px;margin-top:20px}}@media(max-width:410px){.lux-hero-buttons{gap:8px}.lux-btn{padding:12px;font-size:11px;gap:10px}.lux-product-image{height:125px}.lux-material img{height:90px}.lux-hero-visual{height:220px}}
 
 .lux-product-sku { display:block; margin-top:5px; font-size:11px; letter-spacing:.04em; color:#a5a3ab; }
+
+/* FORMA 3D — Premium product cards */
+
+.lux-product-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lux-product-link:hover {
+  text-decoration: none;
+  border-color: #ed7618;
+}
+
+/* Rasmlarni kesmasdan ko'rsatish */
+.lux-product-image {
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #151519;
+}
+
+.lux-product-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transform: none !important;
+  transition: none;
+}
+
+/* Hover paytida rasm kattalashmasin */
+.lux-product:hover img {
+  transform: none !important;
+}
+
+/* Mahsulot nomi */
+.lux-product-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #f5f4f2;
+  margin-bottom: 10px;
+}
+
+/* Kartochka animatsiyasi */
+.lux-product-link {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.lux-product-link:hover {
+  transform: none;
+  background: #1c1c21;
+}
+
+/* Eski Batafsil overlay */
+.lux-hover-view {
+  display: none !important;
+}
