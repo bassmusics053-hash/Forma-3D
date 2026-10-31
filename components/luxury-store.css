@@ -67,3 +67,37 @@
 .lux-hover-view {
   display: none !important;
 }
+
+/* FORMA 3D Footer contacts */
+
+.lux-footer .forma-footer-contacts a,
+.lux-footer .forma-footer-socials a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 13px;
+  color: #e8e5e9;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.lux-footer .forma-footer-contacts a:hover,
+.lux-footer .forma-footer-socials a:hover {
+  color: #ed7618;
+}
+
+.forma-footer-icon {
+  color: #ed7618;
+  font-size: 18px;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .lux-footer .forma-footer-contacts a,
+  .lux-footer .forma-footer-socials a {
+    font-size: 12px;
+    gap: 6px;
+  }
+}
