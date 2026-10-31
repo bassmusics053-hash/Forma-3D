@@ -1,7 +1,9 @@
 
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import ProductVariants from "@/components/ProductVariants";
+import ProductBackButton from "@/components/ProductBackButton";
 
 import { publicSupabase } from "@/lib/supabase";
 import { demoMode, demoProducts } from "@/lib/demo-catalog";
@@ -215,6 +217,67 @@ colors.push(
 
   const isAvailable = Number(product.stock) > 0;
 
+  // FORMA3D_RECOMMENDATIONS_START
+  // Shu kategoriyadagi boshqa faol mahsulotlar (hozirgi mahsulotsiz).
+  type SuggestedProduct = {
+    id: string;
+    name: string;
+    slug: string;
+    sku: string | null;
+    price: number;
+    image_url: string | null;
+  };
+
+  let suggestedProducts: SuggestedProduct[] = [];
+
+  if (demoMode) {
+    suggestedProducts = demoProducts
+      .filter((item) =>
+        item.slug !== slug &&
+        item.active &&
+        item.category?.slug === product.category?.slug
+      )
+      .map((item) => ({
+        id: String(item.id),
+        name: String(item.name),
+        slug: String(item.slug),
+        sku: item.sku ?? null,
+        price: Number(item.price || 0),
+        image_url: item.image_url ?? null,
+      }));
+  } else if (product.category_id) {
+    const { data: otherProducts, error: recommendationError } =
+      await publicSupabase()
+        .from("products")
+        .select("id, name, slug, sku, price, image_url")
+        .eq("category_id", product.category_id)
+        .eq("active", true)
+        .neq("id", product.id)
+        .limit(100);
+
+    if (recommendationError) {
+      console.error("FORMA 3D tavsiyalar:", recommendationError.message);
+    } else {
+      suggestedProducts = (otherProducts ?? []).map((item) => ({
+        id: String(item.id),
+        name: String(item.name),
+        slug: String(item.slug),
+        sku: item.sku ?? null,
+        price: Number(item.price || 0),
+        image_url: item.image_url ?? null,
+      }));
+    }
+  }
+
+  // Har yangi sahifa yuklanishida Fisher-Yates orqali aralashtirish.
+  for (let index = suggestedProducts.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [suggestedProducts[index], suggestedProducts[randomIndex]] =
+      [suggestedProducts[randomIndex], suggestedProducts[index]];
+  }
+  const recommendations = suggestedProducts.slice(0, 6);
+  // FORMA3D_RECOMMENDATIONS_END
+
   return (
     <>
       <ProductViewTracker
@@ -233,12 +296,7 @@ colors.push(
             />
           </a>
 
-          <a
-            className="backButton"
-            href="/"
-          >
-            ← Mahsulotlarga qaytish
-          </a>
+          <ProductBackButton />
         </div>
       </header>
 
@@ -374,6 +432,49 @@ colors.push(
 
         </aside>
       </main>
+
+
+      {/* FORMA3D_RECOMMENDATIONS_SECTION_START */}
+      {recommendations.length > 0 && (
+        <section className="wrap formaRelated" aria-label="O‘xshash mahsulotlar">
+          <div className="formaRelatedHeader">
+            <div>
+              <span className="formaRelatedEyebrow">FORMA 3D · TAVSIYALAR</span>
+              <h2>Sizga yana yoqishi mumkin</h2>
+              <p>
+                {product.category?.name || "Shu kategoriya"} — boshqa modellar
+              </p>
+            </div>
+          </div>
+
+          <div className="formaRelatedGrid">
+            {recommendations.map((item) => (
+              <Link
+                key={item.id}
+                className="formaRelatedCard"
+                href={`/products/${encodeURIComponent(item.slug)}?from=${encodeURIComponent(slug)}`}
+              >
+                <div className="formaRelatedPicture">
+                  {item.image_url ? (
+                    <img src={item.image_url} alt={item.name} loading="lazy" decoding="async" />
+                  ) : (
+                    <span>FORMA 3D</span>
+                  )}
+                </div>
+                <div className="formaRelatedBody">
+                  <strong>{item.name}</strong>
+                  {item.sku && <small>SKU: {item.sku}</small>}
+                  <div className="formaRelatedBottom">
+                    <b>{item.price.toLocaleString("ru-RU")} so‘m</b>
+                    <span aria-hidden="true">↗</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+      {/* FORMA3D_RECOMMENDATIONS_SECTION_END */}
 
       <ThemeButton />
     </>
