@@ -244,3 +244,11 @@ body:not(.dark) .demoNotice{background:#f5e9fa;color:#583367}
   .formaRelatedBottom b { font-size: 13px; }
   .formaRelatedBottom span { width: 30px; height: 30px; }
 }
+
+/* FORMA 3D — Ombor xabarini yashirish */
+
+.productStock,
+.productStock.available,
+.productStock.unavailable {
+  display: none !important;
+}
