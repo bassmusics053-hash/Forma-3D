@@ -56,6 +56,8 @@ type Settings = {
   phone?: string;
   google_maps_url?: string;
   apple_maps_url?: string;
+  phone_2?: string;
+  telegram_channel_url?: string;
 };
 
 type AnalyticsItem = {
@@ -1043,6 +1045,17 @@ export default function AdminDashboard() {
                   placeholder="https://t.me/username"
                 />
               </div>
+              <div className="field">
+                <label>Telegram kanal havolasi</label>
+                <input
+                  name="telegram_channel_url"
+                  type="text"
+                  defaultValue={settings.telegram_channel_url || ""}
+                  placeholder="https://t.me/kanal_nomi"
+                />
+              </div>
+
+
 
               <div className="field">
                 <label>Instagram havolasi</label>
@@ -1061,6 +1074,17 @@ export default function AdminDashboard() {
                   placeholder="+998 90 123 45 67"
                 />
               </div>
+              <div className="field">
+                <label>Ikkinchi telefon raqami</label>
+                <input
+                  name="phone_2"
+                  type="tel"
+                  defaultValue={settings.phone_2 || ""}
+                  placeholder="+998 XX XXX XX XX"
+                />
+              </div>
+
+
 
               <div className="field">
                 <label>Google Maps</label>
