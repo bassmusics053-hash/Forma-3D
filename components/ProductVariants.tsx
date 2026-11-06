@@ -22,6 +22,7 @@ type Product = {
   name: string;
   slug: string;
   image_url: string | null;
+  sku?: string | null;
 };
 
 type Props = {
@@ -112,6 +113,23 @@ export default function ProductVariants({
       " so‘m"
     );
   }
+
+
+const orderMessage =
+  `Assalomu alaykum. Men ${product.name} nomli shaxmat naborizdan ${selectedSize?.label ?? ""} o‘lchamdagisini buyurtma qilmoqchi edim.`;
+
+
+const orderLink = (() => {
+  if (!telegramUrl || !canOrder) return "";
+
+  try {
+    const url = new URL(telegramUrl);
+    url.searchParams.set("text", orderMessage);
+    return url.toString();
+  } catch {
+    return "";
+  }
+})();
 
   return (
     <section className="formaVariants">
@@ -223,7 +241,7 @@ export default function ProductVariants({
       {/* TELEGRAMGA O'TISH */}
       {canOrder && telegramUrl ? (
         <a
-          href={telegramUrl}
+          href={orderLink}
           target="_blank"
           rel="noopener noreferrer"
           className="formaAddToCart formaOrderButton"
@@ -244,4 +262,5 @@ export default function ProductVariants({
 
     </section>
   );
+  
 }
