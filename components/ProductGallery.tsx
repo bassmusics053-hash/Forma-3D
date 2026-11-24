@@ -27,6 +27,8 @@ export default function ProductGallery({
         <img
           src={images[activeImage]}
           alt={productName}
+          loading="eager"
+          decoding="async"
         />
       </div>
 
@@ -46,6 +48,8 @@ export default function ProductGallery({
               <img
                 src={image}
                 alt={`${productName} rasm ${index + 1}`}
+                loading="lazy"
+                decoding="async"
               />
             </button>
           ))}
