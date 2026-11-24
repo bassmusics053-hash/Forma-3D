@@ -49,21 +49,29 @@ function validate(body: Data) {
   const product_id = body.product_id === null || body.product_id === "" || body.product_id === undefined ? null : body.product_id;
   const material_grams = numberInRange(body.material_grams, 0.01, 100000);
   const print_minutes = numberInRange(body.print_minutes, 1, 525600, true);
-  const width_mm = numberInRange(body.width_mm, 0.01, 10000);
-  const depth_mm = numberInRange(body.depth_mm, 0.01, 10000);
-  const height_mm = numberInRange(body.height_mm, 0.01, 10000);
+  const king_diameter_mm = numberInRange(body.king_diameter_mm, 0.01, 10000);
+  const king_height_mm = numberInRange(body.king_height_mm, 0.01, 10000);
+  const pawn_diameter_mm = numberInRange(body.pawn_diameter_mm, 0.01, 10000);
+  const pawn_height_mm = numberInRange(body.pawn_height_mm, 0.01, 10000);
+  const source_url = String(body.source_url ?? "").trim();
+  if (source_url) {
+    try {
+      const url = new URL(source_url);
+      if (source_url.length > 2048 || !["http:", "https:"].includes(url.protocol) || url.username || url.password) throw new Error();
+    } catch { return { error: "Model manbasi uchun to‘g‘ri HTTP yoki HTTPS havolasini kiriting." }; }
+  }
   const fill_percent = body.fill_percent === "" || body.fill_percent === null || body.fill_percent === undefined
     ? null : numberInRange(body.fill_percent, 1, 100, true);
   const allowed = ["resin", "pla", "petg", "abs", "tpu", "other"];
   if (model_name.length < 2 || !allowed.includes(material_type) ||
     (product_id !== null && !uuid(product_id)) ||
-    [material_grams, print_minutes, width_mm, depth_mm, height_mm].some(value => value === null) ||
+    [material_grams, print_minutes, king_diameter_mm, king_height_mm, pawn_diameter_mm, pawn_height_mm].some(value => value === null) ||
     (body.fill_percent !== "" && body.fill_percent !== null && body.fill_percent !== undefined && fill_percent === null)) {
     return { error: "Model nomi, material turi, o‘lcham, sarf yoki print vaqtini tekshiring." };
   }
   return {
     data: { model_name, variant_label, printer_name, material_type, material_name,
-      material_grams, print_minutes, width_mm, depth_mm, height_mm, fill_percent, notes,
+      material_grams, print_minutes, king_diameter_mm, king_height_mm, pawn_diameter_mm, pawn_height_mm, source_url, fill_percent, notes,
       product_id: product_id as string | null },
   };
 }
@@ -72,7 +80,7 @@ export async function GET() {
   if (!(await authorized())) return responseError("Ruxsat yo‘q", 401);
   try {
     const { data, error } = await adminSupabase().from("production_profiles")
-      .select("id,product_id,model_name,variant_label,printer_name,material_type,material_name,material_grams,print_minutes,width_mm,depth_mm,height_mm,fill_percent,notes,created_at,updated_at")
+      .select("id,product_id,model_name,variant_label,printer_name,material_type,material_name,material_grams,print_minutes,king_diameter_mm,king_height_mm,pawn_diameter_mm,pawn_height_mm,source_url,fill_percent,notes,created_at,updated_at")
       .order("updated_at", { ascending: false }).limit(2000);
     if (error) throw error;
     return NextResponse.json(data || [], { headers: { "Cache-Control": "no-store" } });

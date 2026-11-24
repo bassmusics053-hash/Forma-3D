@@ -14,9 +14,11 @@ type Profile = {
   material_name: string;
   material_grams: number;
   print_minutes: number;
-  width_mm: number;
-  depth_mm: number;
-  height_mm: number;
+  king_diameter_mm: number | null;
+  king_height_mm: number | null;
+  pawn_diameter_mm: number | null;
+  pawn_height_mm: number | null;
+  source_url: string;
   fill_percent: number | null;
   notes: string;
   created_at: string;
@@ -33,9 +35,11 @@ type Form = {
   material_grams: string;
   hours: string;
   minutes: string;
-  width_mm: string;
-  depth_mm: string;
-  height_mm: string;
+  king_diameter_mm: string;
+  king_height_mm: string;
+  pawn_diameter_mm: string;
+  pawn_height_mm: string;
+  source_url: string;
   fill_percent: string;
   notes: string;
 };
@@ -43,7 +47,7 @@ type Form = {
 const initial: Form = {
   product_id: "", model_name: "", variant_label: "Standart", printer_name: "",
   material_type: "resin", material_name: "", material_grams: "", hours: "", minutes: "",
-  width_mm: "", depth_mm: "", height_mm: "", fill_percent: "", notes: "",
+  king_diameter_mm: "", king_height_mm: "", pawn_diameter_mm: "", pawn_height_mm: "", source_url: "", fill_percent: "", notes: "",
 };
 const materials: { value: MaterialType; label: string }[] = [
   { value: "resin", label: "Resin (smola)" }, { value: "pla", label: "PLA" },
@@ -64,6 +68,8 @@ function formatTime(total: number) {
   return h ? `${h} soat${m ? ` ${m} daq` : ""}` : `${m} daq`;
 }
 function num(value: number) { return Number(value).toLocaleString("uz-UZ", { maximumFractionDigits: 2 }); }
+
+function dimension(d: number | null, h: number | null) { return d == null || h == null ? "Kiritilmagan" : `Ø ${num(d)} × ${num(h)} mm`; }
 
 export default function ProductionDashboard() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -118,7 +124,7 @@ export default function ProductionDashboard() {
       material_grams: String(profile.material_grams),
       hours: String(Math.floor(profile.print_minutes / 60)),
       minutes: String(profile.print_minutes % 60),
-      width_mm: String(profile.width_mm), depth_mm: String(profile.depth_mm), height_mm: String(profile.height_mm),
+      king_diameter_mm: String(profile.king_diameter_mm ?? ""), king_height_mm: String(profile.king_height_mm ?? ""), pawn_diameter_mm: String(profile.pawn_diameter_mm ?? ""), pawn_height_mm: String(profile.pawn_height_mm ?? ""), source_url: profile.source_url || "",
       fill_percent: profile.fill_percent === null ? "" : String(profile.fill_percent),
       notes: profile.notes,
     });
@@ -133,9 +139,9 @@ export default function ProductionDashboard() {
     if (!Number.isInteger(hours) || !Number.isInteger(minutes) || hours < 0 || minutes < 0 || minutes > 59 || hours * 60 + minutes < 1) {
       setError("Chop etish vaqtini to‘g‘ri kiriting (daqiqa 0–59)."); return;
     }
-    if (![form.material_grams, form.width_mm, form.depth_mm, form.height_mm]
+    if (![form.material_grams, form.king_diameter_mm, form.king_height_mm, form.pawn_diameter_mm, form.pawn_height_mm]
       .every(value => value.trim() !== "" && Number.isFinite(Number(value)) && Number(value) > 0)) {
-      setError("Material sarfi va uchala o‘lcham noldan katta bo‘lishi kerak."); return;
+      setError("Material sarfi va to‘rtta o‘lcham noldan katta bo‘lishi kerak."); return;
     }
     const payload = {
       ...(form.id ? { id: form.id } : {}),
@@ -147,7 +153,7 @@ export default function ProductionDashboard() {
       material_name: form.material_name,
       material_grams: Number(form.material_grams),
       print_minutes: hours * 60 + minutes,
-      width_mm: Number(form.width_mm), depth_mm: Number(form.depth_mm), height_mm: Number(form.height_mm),
+      king_diameter_mm: Number(form.king_diameter_mm), king_height_mm: Number(form.king_height_mm), pawn_diameter_mm: Number(form.pawn_diameter_mm), pawn_height_mm: Number(form.pawn_height_mm), source_url: form.source_url,
       fill_percent: form.fill_percent === "" ? null : Number(form.fill_percent),
       notes: form.notes,
     };
@@ -230,7 +236,7 @@ export default function ProductionDashboard() {
               <tbody>
                 {filtered.map(profile => <tr key={profile.id}>
                   <td><strong>{profile.model_name}</strong><small>{profile.variant_label}</small></td>
-                  <td className="productionNonwrap">{num(profile.width_mm)} × {num(profile.depth_mm)} × {num(profile.height_mm)}</td>
+                  <td className="productionNonwrap"><small>Shoh: {dimension(profile.king_diameter_mm, profile.king_height_mm)}</small><small>Piyoda: {dimension(profile.pawn_diameter_mm, profile.pawn_height_mm)}</small>{profile.source_url && /^https?:\/\//i.test(profile.source_url) && <a href={profile.source_url} target="_blank" rel="noopener noreferrer">Model manbasi ↗</a>}</td>
                   <td>{materials.find(m => m.value === profile.material_type)?.label || profile.material_type}
                     {profile.material_name && <small>{profile.material_name}</small>}
                     {profile.fill_percent !== null && <small>To‘ldirish: {profile.fill_percent}%</small>}</td>
@@ -307,13 +313,23 @@ export default function ProductionDashboard() {
                 </div>
               </fieldset>
               <fieldset className="productionFieldset full">
-                <legend>Model o‘lchamlari (mm) *</legend>
-                <div className="productionTriple">
-                  <div className="field"><label htmlFor="productionWidth">Eni — X</label><input id="productionWidth" required type="number" min="0.01" max="10000" step="0.01" value={form.width_mm} onChange={event => change("width_mm", event.target.value)} placeholder="40" /></div>
-                  <div className="field"><label htmlFor="productionDepth">Uzunligi — Y</label><input id="productionDepth" required type="number" min="0.01" max="10000" step="0.01" value={form.depth_mm} onChange={event => change("depth_mm", event.target.value)} placeholder="35" /></div>
-                  <div className="field"><label htmlFor="productionHeight">Balandligi — Z</label><input id="productionHeight" required type="number" min="0.01" max="10000" step="0.01" value={form.height_mm} onChange={event => change("height_mm", event.target.value)} placeholder="85" /></div>
+                <legend>Shoh o‘lchami (mm) *</legend>
+                <div className="productionDouble">
+                  <div className="field"><label htmlFor="king_diameter_mm">Diametri</label><input id="king_diameter_mm" required type="number" min="0.01" max="10000" step="0.01" value={form.king_diameter_mm} onChange={event => change("king_diameter_mm", event.target.value)} /></div>
+                  <div className="field"><label htmlFor="king_height_mm">Balandligi</label><input id="king_height_mm" required type="number" min="0.01" max="10000" step="0.01" value={form.king_height_mm} onChange={event => change("king_height_mm", event.target.value)} /></div>
                 </div>
               </fieldset>
+              <fieldset className="productionFieldset full">
+                <legend>Piyoda o‘lchami (mm) *</legend>
+                <div className="productionDouble">
+                  <div className="field"><label htmlFor="pawn_diameter_mm">Diametri</label><input id="pawn_diameter_mm" required type="number" min="0.01" max="10000" step="0.01" value={form.pawn_diameter_mm} onChange={event => change("pawn_diameter_mm", event.target.value)} /></div>
+                  <div className="field"><label htmlFor="pawn_height_mm">Balandligi</label><input id="pawn_height_mm" required type="number" min="0.01" max="10000" step="0.01" value={form.pawn_height_mm} onChange={event => change("pawn_height_mm", event.target.value)} /></div>
+                </div>
+              </fieldset>
+              <div className="field full">
+                <label htmlFor="productionSource">3D model manbasi (sayt havolasi)</label>
+                <input id="productionSource" type="url" maxLength={2048} value={form.source_url} onChange={event => change("source_url", event.target.value)} placeholder="https://cults3d.com/..." />
+              </div>
               <div className="field full">
                 <label htmlFor="productionFill">To‘ldirish / zichlik (%) — ixtiyoriy</label>
                 <input id="productionFill" type="number" min="1" max="100" step="1" value={form.fill_percent} onChange={event => change("fill_percent", event.target.value)} placeholder="Masalan: 20" />
