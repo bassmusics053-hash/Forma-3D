@@ -696,6 +696,8 @@ export default function AdminDashboard() {
             )}
           </button>
 
+          <a className="productionLink" href="/admin/production">🖨 Ishlab chiqarish</a>
+
           <button
             type="button"
             className={section === "settings" ? "active" : ""}
